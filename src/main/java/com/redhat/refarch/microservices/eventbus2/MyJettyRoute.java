@@ -65,7 +65,16 @@ public class MyJettyRoute extends RouteBuilder {
         	.get("/{id}").to("direct:processNewOrderEvent")
         	.post("/{id}").to("direct:processInfoOrderEvent")
         	.delete("/{id}").to("direct:processDeleteOrderEvent");
+    	
+    	
+    	
+    	rest("/v3/event/customer/")
+    		.get("/{id}").to("direct:processNewCustomerEvent")
+        	.post("/{id}").to("direct:processInfoCustomerEvent")
+        	.delete("/{id}").to("direct:processDeleteCustomerEvent");
 
+    	
+    	
     	from("direct:processNewOrderEvent").log(LoggingLevel.INFO, "New order ${header.id} event received").setHeader("type", constant(ACTION_CREATE)).to("jms:queue:activemq/queue/orders");
         
         from("direct:processInfoOrderEvent").log(LoggingLevel.INFO, "Order info ${header.id} event received").setHeader("type", constant(ACTION_INFO)).to("jms:queue:activemq/queue/orders");
@@ -77,6 +86,20 @@ public class MyJettyRoute extends RouteBuilder {
         from("jms:queue:activemq/queue/orders?selector='" + ACTION_DELETE + "'").log("Delete order ${header.id} event processed").log("SKUs in inventory released");
         
         from("jms:queue:activemq/queue/orders?selector='" + ACTION_INFO + "'").log("Order info ${header.id} event processed").log("Order info provided");
+    
+        
+        
+        from("direct:processNewCustomerEvent").log(LoggingLevel.INFO, "New customer ${header.id} event received").setHeader("type", constant(ACTION_CREATE)).to("jms:queue:activemq/queue/customers");
+        
+        from("direct:processInfoCustomerEvent").log(LoggingLevel.INFO, "Customer info ${header.id} event received").setHeader("type", constant(ACTION_INFO)).to("jms:queue:activemq/queue/customers");
+        
+        from("direct:processDeleteCustomerEvent").log(LoggingLevel.INFO, "Delete customer ${header.id} event received").setHeader("type", constant(ACTION_DELETE)).to("jms:queue:activemq/queue/customers");   
+        
+        from("jms:queue:activemq/queue/customers?selector='" + ACTION_CREATE + "'").log("Created customer ${header.id} event processed");
+        
+        from("jms:queue:activemq/queue/customers?selector='" + ACTION_DELETE + "'").log("Delete customer ${header.id} event processed");
+        
+        from("jms:queue:activemq/queue/customers?selector='" + ACTION_INFO + "'").log("Customer info ${header.id} event processed");
+       
     }
-
 }
