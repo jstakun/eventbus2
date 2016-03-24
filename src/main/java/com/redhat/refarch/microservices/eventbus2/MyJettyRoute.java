@@ -32,9 +32,9 @@ public class MyJettyRoute extends RouteBuilder {
 	
 	private static final String ACTION_CREATE = "create";
 	
-	private static final String DELETE_CREATE = "delete";
+	private static final String ACTION_DELETE = "delete";
 	
-	private static final String INFO_CREATE = "info";
+	private static final String ACTION_INFO = "info";
 
     @Override
     public void configure() throws Exception {
@@ -68,15 +68,15 @@ public class MyJettyRoute extends RouteBuilder {
 
     	from("direct:processNewOrderEvent").log(LoggingLevel.INFO, "New order ${header.id} event received").setHeader("type", constant(ACTION_CREATE)).to("jms:queue:activemq/queue/orders");
         
-        from("direct:processInfoOrderEvent").log(LoggingLevel.INFO, "Order info ${header.id} event received").setHeader("type", constant(INFO_CREATE)).to("jms:queue:activemq/queue/orders");
+        from("direct:processInfoOrderEvent").log(LoggingLevel.INFO, "Order info ${header.id} event received").setHeader("type", constant(ACTION_INFO)).to("jms:queue:activemq/queue/orders");
         
-        from("direct:processDeleteOrderEvent").log(LoggingLevel.INFO, "Delete order ${header.id} event received").setHeader("type", constant(DELETE_CREATE)).to("jms:queue:activemq/queue/orders");   
+        from("direct:processDeleteOrderEvent").log(LoggingLevel.INFO, "Delete order ${header.id} event received").setHeader("type", constant(ACTION_DELETE)).to("jms:queue:activemq/queue/orders");   
         
-        //from("amqOrdersCreateQueueEndpoint").log("Created order ${header.id} event processed").log("Booked SKUs in inventory");
+        from("jms:queue:activemq/queue/orders?selector='" + ACTION_CREATE + "'").log("Created order ${header.id} event processed").log("Booked SKUs in inventory");
         
-        //from("amqOrdersDeleteQueueEndpoint").log("Delete order ${header.id} event processed").log("SKUs in inventory released");
+        from("jms:queue:activemq/queue/orders?selector='" + ACTION_DELETE + "'").log("Delete order ${header.id} event processed").log("SKUs in inventory released");
         
-        //from("amqOrdersInfoQueueEndpoint").log("Order info ${header.id} event processed").log("Order info provided");
+        from("jms:queue:activemq/queue/orders?selector='" + ACTION_INFO + "'").log("Order info ${header.id} event processed").log("Order info provided");
     }
 
 }
