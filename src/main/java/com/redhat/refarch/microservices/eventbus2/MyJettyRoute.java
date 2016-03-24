@@ -39,7 +39,24 @@ public class MyJettyRoute extends RouteBuilder {
     @Override
     public void configure() throws Exception {
         
-    	ConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://" + System.getenv("AMQ_HOST") + ":" + System.getenv("AMQ_PORT"), System.getenv("AMQ_USERNAME"), System.getenv("AMQ_PASSWORD"));
+    	String host = System.getenv("AMQ_HOST");
+    	if (host == null) {
+    		host = "0.0.0.0";
+    	}
+    	String port = System.getenv("AMQ_PORT");
+    	if (port == null) {
+    		port = "61616";
+    	}
+    	String username = System.getenv("AMQ_USERNAME");
+    	if (username == null) {
+    		username = "admin";
+    	}
+    	String password = System.getenv("AMQ_PASSWORD");
+    	if (password == null) {
+    		password = "manager1";
+    	}
+    	
+    	ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(username, password, "tcp://" + host + ":" + port);
     	getContext().addComponent("jms", JmsComponent.jmsComponentAutoAcknowledge(connectionFactory));
     	
     	restConfiguration().component("jetty").host("0.0.0.0").port(8080).bindingMode(RestBindingMode.auto);
