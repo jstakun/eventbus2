@@ -15,13 +15,13 @@
  */
 package com.redhat.refarch.microservices.eventbus2;
 
-import javax.inject.Inject;
+import javax.jms.ConnectionFactory;
 
-import org.apache.camel.Endpoint;
+import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.cdi.ContextName;
-import org.apache.camel.cdi.Uri;
+import org.apache.camel.component.jms.JmsComponent;
 import org.apache.camel.model.rest.RestBindingMode;
 
 /**
@@ -35,22 +35,13 @@ public class MyJettyRoute extends RouteBuilder {
 	private static final String DELETE_CREATE = "delete";
 	
 	private static final String INFO_CREATE = "info";
-	
-	@Inject @Uri("activemq:queue:orders") 
-    private Endpoint amqOrdersQueueEndpoint; 
-	
-	@Inject @Uri("activemq:queue:orders?selector=type='" + ACTION_CREATE +"'") 
-    private Endpoint amqOrdersCreateQueueEndpoint; 
-	
-	@Inject @Uri("activemq:queue:orders?selector=type='" + DELETE_CREATE +"'") 
-    private Endpoint amqOrdersDeleteQueueEndpoint; 
-	
-	@Inject @Uri("activemq:queue:orders?selector=type='" + INFO_CREATE +"'") 
-    private Endpoint amqOrdersInfoQueueEndpoint; 
-	
+
     @Override
     public void configure() throws Exception {
         
+    	ConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://" + System.getenv("AMQ_HOST") + ":" + System.getenv("AMQ_PORT"), System.getenv("AMQ_USERNAME"), System.getenv("AMQ_PASSWORD"));
+    	getContext().addComponent("jms", JmsComponent.jmsComponentAutoAcknowledge(connectionFactory));
+    	
     	restConfiguration().component("jetty").host("0.0.0.0").port(8080).bindingMode(RestBindingMode.auto);
     	
     	rest("/v3/event/order/")
@@ -58,17 +49,17 @@ public class MyJettyRoute extends RouteBuilder {
         	.post("/{id}").to("direct:processInfoOrderEvent")
         	.delete("/{id}").to("direct:processDeleteOrderEvent");
 
-    	from("direct:processNewOrderEvent").log(LoggingLevel.INFO, "New order ${header.id} event received").setHeader("type", constant(ACTION_CREATE)).to(amqOrdersQueueEndpoint);
+    	from("direct:processNewOrderEvent").log(LoggingLevel.INFO, "New order ${header.id} event received").setHeader("type", constant(ACTION_CREATE)).to("jms:queue:activemq/queue/orders");
         
-        from("direct:processInfoOrderEvent").log(LoggingLevel.INFO, "Order info ${header.id} event received").setHeader("type", constant(INFO_CREATE)).to(amqOrdersQueueEndpoint);
+        from("direct:processInfoOrderEvent").log(LoggingLevel.INFO, "Order info ${header.id} event received").setHeader("type", constant(INFO_CREATE)).to("jms:queue:activemq/queue/orders");
         
-        from("direct:processDeleteOrderEvent").log(LoggingLevel.INFO, "Delete order ${header.id} event received").setHeader("type", constant(DELETE_CREATE)).to(amqOrdersQueueEndpoint);   
+        from("direct:processDeleteOrderEvent").log(LoggingLevel.INFO, "Delete order ${header.id} event received").setHeader("type", constant(DELETE_CREATE)).to("jms:queue:activemq/queue/orders");   
         
-        from("amqOrdersCreateQueueEndpoint").log("Created order ${header.id} event processed").log("Booked SKUs in inventory");
+        //from("amqOrdersCreateQueueEndpoint").log("Created order ${header.id} event processed").log("Booked SKUs in inventory");
         
-        from("amqOrdersDeleteQueueEndpoint").log("Delete order ${header.id} event processed").log("SKUs in inventory released");
+        //from("amqOrdersDeleteQueueEndpoint").log("Delete order ${header.id} event processed").log("SKUs in inventory released");
         
-        from("amqOrdersInfoQueueEndpoint").log("Order info ${header.id} event processed").log("Order info provided");
+        //from("amqOrdersInfoQueueEndpoint").log("Order info ${header.id} event processed").log("Order info provided");
     }
 
 }
