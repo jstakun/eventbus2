@@ -15,9 +15,13 @@
  */
 package com.redhat.refarch.microservices.eventbus2;
 
+import javax.inject.Inject;
+
+import org.apache.camel.Endpoint;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.cdi.ContextName;
+import org.apache.camel.cdi.Uri;
 import org.apache.camel.model.rest.RestBindingMode;
 
 /**
@@ -25,8 +29,24 @@ import org.apache.camel.model.rest.RestBindingMode;
  */
 @ContextName("EventBus2")
 public class MyJettyRoute extends RouteBuilder {
+	
+	private static final String ACTION_CREATE = "create";
+	private static final String DELETE_CREATE = "delete";
+	private static final String INFO_CREATE = "info";
+	
 
-    
+	@Inject @Uri("activemq:queue:orders") 
+    private Endpoint amqOrdersQueueEndpoint; 
+	
+	@Inject @Uri("activemq:queue:orders?selector=type='" + ACTION_CREATE +"'") 
+    private Endpoint amqOrdersCreateQueueEndpoint; 
+	
+	@Inject @Uri("activemq:queue:orders?selector=type='" + DELETE_CREATE +"'") 
+    private Endpoint amqOrdersDeleteQueueEndpoint; 
+	
+	@Inject @Uri("activemq:queue:orders?selector=type='" + INFO_CREATE +"'") 
+    private Endpoint amqOrdersInfoQueueEndpoint; 
+	
     @Override
     public void configure() throws Exception {
         
@@ -37,11 +57,17 @@ public class MyJettyRoute extends RouteBuilder {
         	.post("/{id}").to("direct:processInfoOrderEvent")
         	.delete("/{id}").to("direct:processDeleteOrderEvent");
 
-        from("direct:processNewOrderEvent").log(LoggingLevel.INFO, "New order ${header.id} event received");
+    	from("direct:processNewOrderEvent").log(LoggingLevel.INFO, "New order ${header.id} event received").setHeader("type", constant(ACTION_CREATE)).to(amqOrdersQueueEndpoint);
         
-        from("direct:processInfoOrderEvent").log(LoggingLevel.INFO, "Order info ${header.id} event received");
+        from("direct:processInfoOrderEvent").log(LoggingLevel.INFO, "Order info ${header.id} event received").setHeader("type", constant(INFO_CREATE)).to(amqOrdersQueueEndpoint);
         
-        from("direct:processDeleteOrderEvent").log(LoggingLevel.INFO, "Delete order ${header.id} event received");   
+        from("direct:processDeleteOrderEvent").log(LoggingLevel.INFO, "Delete order ${header.id} event received").setHeader("type", constant(DELETE_CREATE)).to(amqOrdersQueueEndpoint);   
+        
+        from("amqOrdersCreateQueueEndpoint").log("Created order ${header.id} event processed").log("Booked SKUs in inventory");
+        
+        from("amqOrdersDeleteQueueEndpoint").log("Delete order ${header.id} event processed").log("SKUs in inventory released");
+        
+        from("amqOrdersInfoQueueEndpoint").log("Order info ${header.id} event processed").log("Order info provided");
     }
 
 }
