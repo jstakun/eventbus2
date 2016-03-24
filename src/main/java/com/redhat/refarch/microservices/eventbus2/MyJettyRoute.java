@@ -79,11 +79,11 @@ public class MyJettyRoute extends RouteBuilder {
 
     	
     	
-    	from("direct:processNewOrderEvent").log(LoggingLevel.INFO, "New order ${header.id} event received").setHeader("type", constant(ACTION_CREATE)).to("jms:queue:activemq/queue/orders");
+    	from("direct:processNewOrderEvent").log(LoggingLevel.INFO, "New order ${header.id} event received").setHeader("type", constant(ACTION_CREATE)).inOnly("jms:queue:activemq/queue/orders");
         
-        from("direct:processInfoOrderEvent").log(LoggingLevel.INFO, "Order info ${header.id} event received").setHeader("type", constant(ACTION_INFO)).to("jms:queue:activemq/queue/orders");
+        from("direct:processInfoOrderEvent").log(LoggingLevel.INFO, "Order info ${header.id} event received").setHeader("type", constant(ACTION_INFO)).inOnly("jms:queue:activemq/queue/orders");
         
-        from("direct:processDeleteOrderEvent").log(LoggingLevel.INFO, "Delete order ${header.id} event received").setHeader("type", constant(ACTION_DELETE)).to("jms:queue:activemq/queue/orders");   
+        from("direct:processDeleteOrderEvent").log(LoggingLevel.INFO, "Delete order ${header.id} event received").setHeader("type", constant(ACTION_DELETE)).inOnly("jms:queue:activemq/queue/orders");   
         
         from("jms:queue:activemq/queue/orders?selector='" + ACTION_CREATE + "'").log("Created order ${header.id} event processed").log("Booked SKUs in inventory");
         
@@ -93,11 +93,11 @@ public class MyJettyRoute extends RouteBuilder {
     
         
         
-        from("direct:processNewCustomerEvent").log(LoggingLevel.INFO, "New customer ${header.id} event received").setHeader("type", constant(ACTION_CREATE)).to("jms:queue:activemq/queue/customers");
+        from("direct:processNewCustomerEvent").log(LoggingLevel.INFO, "New customer ${header.id} event received").setHeader("type", constant(ACTION_CREATE)).inOnly("jms:queue:activemq/queue/customers");
         
-        from("direct:processInfoCustomerEvent").log(LoggingLevel.INFO, "Customer info ${header.id} event received").setHeader("type", constant(ACTION_INFO)).to("jms:queue:activemq/queue/customers");
+        from("direct:processInfoCustomerEvent").log(LoggingLevel.INFO, "Customer info ${header.id} event received").setHeader("type", constant(ACTION_INFO)).inOnly("jms:queue:activemq/queue/customers");
         
-        from("direct:processDeleteCustomerEvent").log(LoggingLevel.INFO, "Delete customer ${header.id} event received").setHeader("type", constant(ACTION_DELETE)).to("jms:queue:activemq/queue/customers");   
+        from("direct:processDeleteCustomerEvent").log(LoggingLevel.INFO, "Delete customer ${header.id} event received").setHeader("type", constant(ACTION_DELETE)).inOnly("jms:queue:activemq/queue/customers");   
         
         from("jms:queue:activemq/queue/customers?selector='" + ACTION_CREATE + "'").log("Created customer ${header.id} event processed");
         
