@@ -59,7 +59,11 @@ public class MyJettyRoute extends RouteBuilder {
     	ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(username, password, "tcp://" + host + ":" + port);
     	getContext().addComponent("jms", JmsComponent.jmsComponentAutoAcknowledge(connectionFactory));
     	
+    	
+    	
     	restConfiguration().component("jetty").host("0.0.0.0").port(8080).bindingMode(RestBindingMode.auto);
+    	
+    	
     	
     	rest("/v3/event/order/")
         	.get("/{id}").to("direct:processNewOrderEvent")
