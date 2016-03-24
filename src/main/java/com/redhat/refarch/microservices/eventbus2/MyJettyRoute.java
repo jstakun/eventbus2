@@ -31,10 +31,11 @@ import org.apache.camel.model.rest.RestBindingMode;
 public class MyJettyRoute extends RouteBuilder {
 	
 	private static final String ACTION_CREATE = "create";
+	
 	private static final String DELETE_CREATE = "delete";
+	
 	private static final String INFO_CREATE = "info";
 	
-
 	@Inject @Uri("activemq:queue:orders") 
     private Endpoint amqOrdersQueueEndpoint; 
 	
