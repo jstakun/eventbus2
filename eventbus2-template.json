@@ -8,12 +8,12 @@
       "iconClass": "icon-java"
     },
     "labels": {},
-    "name": "eventbus"
+    "name": "eventbus2"
   },
   "parameters": [
     {
       "name": "APP_NAME",
-      "value": "eventbus",
+      "value": "eventbus2",
       "description": "Application Name"
     },
     {
@@ -28,7 +28,7 @@
     },
     {
       "name": "SERVICE_NAME",
-      "value": "eventbus",
+      "value": "eventbus2",
       "description": "Exposed Service name"
     },
     {
