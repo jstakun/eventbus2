@@ -61,7 +61,7 @@ public class MyJettyRoute extends RouteBuilder {
     	
     	
     	
-    	restConfiguration().component("jetty").host("0.0.0.0").port(8080).bindingMode(RestBindingMode.auto);
+    	restConfiguration().component("jetty").host("0.0.0.0").port(8080).contextPath("/camel").bindingMode(RestBindingMode.auto);
     	
     	
     	
