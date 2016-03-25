@@ -28,7 +28,7 @@
     },
     {
       "name": "SERVICE_NAME",
-      "value": "eventbus2",
+      "value": "eventbus",
       "description": "Exposed Service name"
     },
     {
