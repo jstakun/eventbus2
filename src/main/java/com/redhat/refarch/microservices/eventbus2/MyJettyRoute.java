@@ -81,7 +81,7 @@ public class MyJettyRoute extends RouteBuilder {
     	
     	from("direct:processNewOrderEvent").routeId("Process New Order Event Route").log(LoggingLevel.INFO, "New order ${header.id} event received").setHeader("type", constant(ACTION_CREATE)).inOnly("jms:queue:activemq/queue/orders");
         
-        from("direct:processInfoOrderEvent").routeId("Process Order Info Event Route").log(LoggingLevel.INFO, "Order info ${header.id} event received").setHeader("type", constant(ACTION_INFO)).inOnly("jms:queue:activemq/queue/orders");
+        from("direct:processInfoOrderEvent").routeId("Process Order Info Event Route").setBody(simple("Order info ${header.id} event received")).log("${body}").setHeader("type", constant(ACTION_INFO)).inOnly("jms:queue:activemq/queue/orders");
         
         from("direct:processDeleteOrderEvent").routeId("Process Delete Order Event Route").log(LoggingLevel.INFO, "Delete order ${header.id} event received").setHeader("type", constant(ACTION_DELETE)).inOnly("jms:queue:activemq/queue/orders");   
         
@@ -95,7 +95,7 @@ public class MyJettyRoute extends RouteBuilder {
         
         from("direct:processNewCustomerEvent").routeId("Process New Customer Event Route").log(LoggingLevel.INFO, "New customer ${header.id} event received").setHeader("type", constant(ACTION_CREATE)).inOnly("jms:queue:activemq/queue/customers");
         
-        from("direct:processInfoCustomerEvent").routeId("Process Customer Info Event Route").log(LoggingLevel.INFO, "Customer info ${header.id} event received").setHeader("type", constant(ACTION_INFO)).inOnly("jms:queue:activemq/queue/customers");
+        from("direct:processInfoCustomerEvent").routeId("Process Customer Info Event Route").setBody(simple("Customer info ${header.id} event received")).log("${body}").setHeader("type", constant(ACTION_INFO)).inOnly("jms:queue:activemq/queue/customers");
         
         from("direct:processDeleteCustomerEvent").routeId("Process Delete Customer Event Route").log(LoggingLevel.INFO, "Delete customer ${header.id} event received").setHeader("type", constant(ACTION_DELETE)).inOnly("jms:queue:activemq/queue/customers");   
         
