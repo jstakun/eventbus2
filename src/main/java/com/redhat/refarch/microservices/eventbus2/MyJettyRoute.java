@@ -61,18 +61,18 @@ public class MyJettyRoute extends RouteBuilder {
     	
     	
     	
-    	restConfiguration().component("jetty").host("0.0.0.0").port(8080).contextPath("/camel").bindingMode(RestBindingMode.auto);
+    	restConfiguration().component("jetty").host("0.0.0.0").port(8080).bindingMode(RestBindingMode.auto);
     	
     	
     	
-    	rest("/v3/event/order/")
+    	rest("/camel/v3/event/order/")
         	.get("/{id}").to("direct:processInfoOrderEvent")
         	.post("/{id}").to("direct:processNewOrderEvent")
         	.delete("/{id}").to("direct:processDeleteOrderEvent");
     	
     	
     	
-    	rest("/v3/event/customer/")
+    	rest("/camel/v3/event/customer/")
     		.get("/{id}").to("direct:processInfoCustomerEvent")
         	.post("/{id}").to("direct:processNewCustomerEvent")
         	.delete("/{id}").to("direct:processDeleteCustomerEvent");
