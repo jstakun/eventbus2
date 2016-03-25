@@ -66,15 +66,15 @@ public class MyJettyRoute extends RouteBuilder {
     	
     	
     	rest("/v3/event/order/")
-        	.get("/{id}").to("direct:processNewOrderEvent")
-        	.post("/{id}").to("direct:processInfoOrderEvent")
+        	.get("/{id}").to("direct:processInfoOrderEvent")
+        	.post("/{id}").to("direct:processNewOrderEvent")
         	.delete("/{id}").to("direct:processDeleteOrderEvent");
     	
     	
     	
     	rest("/v3/event/customer/")
-    		.get("/{id}").to("direct:processNewCustomerEvent")
-        	.post("/{id}").to("direct:processInfoCustomerEvent")
+    		.get("/{id}").to("direct:processInfoCustomerEvent")
+        	.post("/{id}").to("direct:processNewCustomerEvent")
         	.delete("/{id}").to("direct:processDeleteCustomerEvent");
 
     	
