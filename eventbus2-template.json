@@ -65,6 +65,26 @@
       "name": "BUILD_SECRET",
       "description": "The secret needed to trigger a build",
       "from": "[a-zA-Z0-9]{8}"
+    },
+    {
+      "name": "AMQ_HOST",
+      "value": "",
+      "required": true
+    },
+    {
+      "name": "AMQ_PORT",
+      "value": "61616",
+      "required": true
+    },
+    {
+      "name": "AMQ_USRENAME",
+      "value": "admin",
+      "required": true
+    },
+    {
+      "name": "AMQ_PASSWORD",
+      "value": "manager1",
+      "required": true
     }
   ],
   "objects": [
@@ -316,6 +336,24 @@
                     "name": "jolokia"
                   }
                 ],
+                "env": [
+                	{
+                                        "name": "AMQ_HOST",
+                                        "value": "${AMQ_HOST}"
+                                    },
+                                    {
+                                        "name": "AMQ_PORT",
+                                        "value": "${AMQ_PORT}"
+                                    },
+                                    {
+                                        "name": "AMQ_USERNAME",
+                                        "value": "${AMQ_USERNAME}"
+                                    },
+                                    {
+                                        "name": "AMQ_PASSWORD",
+                                        "value": "${AMQ_PASSWORD}"
+                                    }
+                ]                    
                 "resources": {}
               }
             ]
