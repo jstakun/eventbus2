@@ -353,7 +353,7 @@
                                         "name": "AMQ_PASSWORD",
                                         "value": "${AMQ_PASSWORD}"
                                     }
-                ]                    
+                ],                   
                 "resources": {}
               }
             ]
