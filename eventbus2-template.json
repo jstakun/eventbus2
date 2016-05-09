@@ -77,7 +77,7 @@
       "required": true
     },
     {
-      "name": "AMQ_USRENAME",
+      "name": "AMQ_USERNAME",
       "value": "admin",
       "required": true
     },
